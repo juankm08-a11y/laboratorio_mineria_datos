@@ -1,6 +1,6 @@
 import pandas as pd 
 
-def limpiar_datos(df):
+def limpiar_dolar(df):
 
     print("Datos originales:",df.shape)
 

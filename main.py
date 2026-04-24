@@ -1,28 +1,65 @@
 import pandas as pd 
-from src.limpieza import limpiar_datos
-from src.modelos import entrenar_modelo
 import joblib
 
-df = pd.read_csv("data/raw/dolar_data.csv")
+from src.limpieza_dolar import limpiar_dolar
+from src.limpieza_glucosa import limpiar_glucosa
+from src.limpieza_energia import limpiar_energia
+from src.modelos import entrenar_modelo
 
-df = limpiar_datos(df)
+print("Seleccione dataset:")
+print("1. Dólar")
+print("2. Glucosa")
+print("3. Energía")
 
-print("Datos después de limpieza:",df.shape)
+opcion = input("Ingrese opción: ")
 
-df.to_csv("data/processed/dolar_data_limpio.csv",index=False)
-print("Dataset limpio guardado en dataset/processed")
+if opcion == "1":
+    df = pd.read_csv("data/raw/dolar_data.csv")
 
-columnas = ["Dia","Inflacion","Tasa_interes","Precio_Dolar"]
-for col in columnas:
-    if col not in df.columns:
-        raise ValueError(f"Falta la columna {col}")
+    df = limpiar_dolar(df)
+
+    df.to_csv("data/processed/dolar_data_limpio.csv",index=False)
+
+    x = df[["Dia","Inflacion","Tasa_interes"]]
+    y = df["Precio_Dolar"]
+
+    model = entrenar_modelo(x,y)
+
+    joblib.dump(model,"models/modelo_dolar.pkl")
+
+    print("Modelo dólar listo")
+
+elif opcion == "2":
+    df = pd.read_csv("data/raw/glucosa_data.csv")
+
+    df = limpiar_glucosa(df)
+
+    df.to_csv("data/processed/glucosa_data_limpio.csv",index=False)
     
-x = df[["Dia","Inflacion","Tasa_interes"]]
-y = df["Precio_Dolar"]
+    x = df[["Edad","IMC","Actividad_Fisica"]]
+    y = df["Nivel_Glucosa"]
 
-model = entrenar_modelo(x,y)
+    model = entrenar_modelo(x,y)
 
-joblib.dump(model,"models/modelo_dolar.pkl")
+    joblib.dump(model,"models/modelo_glucosa.pkl")
 
-print("Modelo entrenado y guardado correctamente")
+    print("Modelo glucosa listo")
 
+elif opcion == "3":
+    df = pd.read_csv("data/raw/energia_data.csv")
+
+    df = limpiar_glucosa(df)
+
+    df.to_csv("data/processed/energia_data_limpio.csv",index=False)
+    
+    x = df[["Temperatura","Hora","Dia_Semana"]]
+    y = df["Consumo_Energia"]
+
+    model = entrenar_modelo(x,y)
+
+    joblib.dump(model,"models/modelo_energia.pkl")
+
+    print("Modelo energia listo")
+
+else:
+    print("Opción inválida")
